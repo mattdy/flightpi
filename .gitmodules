@@ -1,0 +1,3 @@
+[submodule "arduino/lib/Adafruit_NeoPixel"]
+	path = arduino/lib/Adafruit_NeoPixel
+	url = https://github.com/adafruit/Adafruit_NeoPixel.git

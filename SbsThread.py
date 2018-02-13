@@ -91,7 +91,9 @@ class SbsThread(threading.Thread):
             rval = self.buff[:pos + len(data)]
             self.buff = self.buff[pos + len(data):]
 
-            self.processLine(rval)
+            msg = rval.strip()
+            if(msg is not None and msg is not ""):
+                self.processLine(msg)
         
         self.socket.close()
         log.info("SbsThread shut down")

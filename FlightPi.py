@@ -22,6 +22,7 @@ stream.setFormatter(formatter)
 log.addHandler(stream)
 
 from SbsThread import SbsThread
+from LcdThread import LcdThread
 import time
 
 class FlightPi:
@@ -37,6 +38,10 @@ class FlightPi:
     def execute(self):
         log.info("Starting up FlightPi")
 
+        self.lcdThread = LcdThread(0x20,20)
+        self.addReceiver(self.lcdThread.processFlight)
+        self.lcdThread.start()
+
         self.sbsThread = SbsThread("mercury",30003)
         self.sbsThread.addReceiver(self.processMessage)
         self.sbsThread.start()
@@ -50,12 +55,13 @@ class FlightPi:
             log.warn("Interrupted, shutting down")
 
         self.sbsThread.stop()
+        self.lcdThread.stop()
 
     def addReceiver(self, callback):
         """ Add a callback function that will be passed updates to the aircraft display """
 
-        log.debug("Added new display receiver - %s" % (func))
-        self.receivers.append(func)
+        log.debug("Added new display receiver - %s" % (callback))
+        self.receivers.append(callback)
 
     def updateAircraft(self):
         ''' Check our list of aircraft for currency, select the one to display '''
@@ -81,8 +87,9 @@ class FlightPi:
             for rec in self.receivers:
                 try:
                     rec(self.display)
-                except:
+                except Exception as e:
                     log.error("Error processing display through function [%s]" % (rec))
+                    log.error(e)
 
     def processMessage(self,msg):
         ''' Callback function for every message received by our SBS processor '''

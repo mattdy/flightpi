@@ -28,6 +28,8 @@ class FlightPi:
     def __init__(self):
         self.stopping = False
         self.aircraft = { }
+        self.receivers = [ ]
+        self.display = None
 
     def stop(self):
         self.stopping = True
@@ -47,8 +49,13 @@ class FlightPi:
         except (KeyboardInterrupt, SystemExit):
             log.warn("Interrupted, shutting down")
 
-
         self.sbsThread.stop()
+
+    def addReceiver(self, callback):
+        """ Add a callback function that will be passed updates to the aircraft display """
+
+        log.debug("Added new display receiver - %s" % (func))
+        self.receivers.append(func)
 
     def updateAircraft(self):
         ''' Check our list of aircraft for currency, select the one to display '''
@@ -68,8 +75,14 @@ class FlightPi:
                 # We have a new favourite
                 lowest = a
 
-        if(lowest is not None):
-            log.debug("Displaying: %s" % (lowest))
+        if(lowest != self.display):
+            self.display = lowest
+            log.debug("Updating display to: %s" % (self.display))
+            for rec in self.receivers:
+                try:
+                    rec(self.display)
+                except:
+                    log.error("Error processing display through function [%s]" % (rec))
 
     def processMessage(self,msg):
         ''' Callback function for every message received by our SBS processor '''

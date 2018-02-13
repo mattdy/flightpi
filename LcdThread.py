@@ -25,8 +25,8 @@ LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line
 LCD_LINE_3 = 0x94 # LCD RAM address for the 3rd line
 LCD_LINE_4 = 0xD4 # LCD RAM address for the 4th line
 
-LCD_BACKLIGHT  = 0x08  # On
-#LCD_BACKLIGHT = 0x00  # Off
+LCD_BACKLIGHT_ON  = 0x08  # On
+LCD_BACKLIGHT_OFF = 0x00  # Off
 
 ENABLE = 0b00000100 # Enable bit
 
@@ -40,6 +40,7 @@ class LcdThread(threading.Thread):
         self.stopping = False
 
         self.display = None
+        self.backlight = LCD_BACKLIGHT_OFF
 
         self.bus = smbus.SMBus(1) #I2C interface
 
@@ -64,6 +65,9 @@ class LcdThread(threading.Thread):
                 LCD_LINE_3: '',
                 LCD_LINE_4: '{}'.format(flight['squawk'].center(self.width))
             }
+            self.backlight = LCD_BACKLIGHT_ON
+        else:
+            self.backlight = LCD_BACKLIGHT_OFF
 
         for i in lines:
             self.__lcd_line(lines[i], i)
@@ -74,8 +78,8 @@ class LcdThread(threading.Thread):
         # bits = the data
         # mode = 1 for data
         #        0 for command
-        bits_high = mode | (bits & 0xF0) | LCD_BACKLIGHT
-        bits_low = mode | ((bits<<4) & 0xF0) | LCD_BACKLIGHT
+        bits_high = mode | (bits & 0xF0) | self.backlight
+        bits_low = mode | ((bits<<4) & 0xF0) | self.backlight
 
         # High bits
         self.bus.write_byte(self.address, bits_high)

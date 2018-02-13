@@ -26,14 +26,19 @@ class SbsMessage:
         if self.parts[0] != "MSG":
            raise ValueError("Invalid message")
 
-        self.transmissionType = self.parts[1]
-        self.sessionID = self.parts[2]
-        self.aircraftID = self.parts[3]
-        self.icao24 = self.parts[4]
-        self.flightID = self.parts[5]
-        self.callsign = self.parts[10]
-        self.altitude = self.parts[11]
-        self.groundSpeed = self.parts[12]
-        self.track = self.parts[13]
-        self.verticalRate = self.parts[16]
-        self.squawk = self.parts[17]
+        self.transmissionType = self.getPart(1)
+        self.sessionID = self.getPart(2)
+        self.aircraftID = self.getPart(3)
+        self.icao24 = self.getPart(4)
+        self.flightID = self.getPart(5)
+        self.callsign = self.getPart(10)
+        self.altitude = self.getPart(11)
+        self.groundSpeed = self.getPart(12)
+        self.track = self.getPart(13)
+        self.verticalRate = self.getPart(16)
+        self.squawk = self.getPart(17)
+
+    def getPart(self, index):
+        fetch = self.parts[index].strip()
+        if(fetch==''): return None
+        return fetch

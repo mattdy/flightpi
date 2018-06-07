@@ -29,73 +29,101 @@ void setup() {
   pixel_alt.show();
 }
 
-void loop() {
-  if (Serial.available() > 0) {
-    String incoming = Serial.readString();
+void processValue(String val) {
+  Serial.print("Processing ");
+  Serial.println(val);
 
-    switch(incoming[0]) {
-      case 'D': { // Direction indication
-          int direction = incoming.substring(1).toInt();
-          int pixels = 1 + (direction / 22.5);
+  switch(val[0]) {
+    case 'D': {
+      setDirection(val.substring(1).toInt());
+    } break;
 
-          Serial.print("Direction: ");
-          Serial.print(direction);
-          Serial.print(", Pixels: ");
-          Serial.println(pixels);
+    case 'A': {
+      setAltitude(val.substring(1).toInt());
+    } break;
 
-          for(uint16_t i=0; i<pixel_dir.numPixels(); i++) {
-            if(i<pixels) {
-              pixel_dir.setPixelColor(dirBulbs[i], pixel_dir.Color(0,0,255));
-            } else {
-              pixel_dir.setPixelColor(dirBulbs[i], pixel_dir.Color(0,0,0));
-            }
-          }
+    case 'L': {
+      //TODO: Livery display
+    } break;
 
-          pixel_dir.show();
-      } break;
-
-      case 'A': { // Altitude indication
-          int level = incoming.substring(1).toInt();
-          int pixels = level / 500; // One LED per 500ft
-
-          Serial.print("Altitude: ");
-          Serial.print(level);
-          Serial.print(", Pixels: ");
-          Serial.println(pixels);
-          
-          if(pixels>pixel_alt.numPixels()) { pixels = pixel_alt.numPixels(); }
-
-          for(uint16_t i=0; i<pixel_alt.numPixels(); i++) {
-            if(i<pixels) {
-              pixel_alt.setPixelColor(altBulbs[i], pixel_alt.Color(0,0,255));
-            } else {
-              pixel_alt.setPixelColor(altBulbs[i], pixel_alt.Color(0,0,0));
-            }
-          }
-
-          pixel_alt.show();
-      } break;
-
-      case 'L': { // Livery indication
-
-      } break;
-
-      case 'C': { // Clear all LEDs
-          Serial.print("Clearing");
-
-          for(uint16_t i=0; i<pixel_dir.numPixels(); i++) {
-            pixel_dir.setPixelColor(i, pixel_dir.Color(0,0,0));
-          }
-          pixel_dir.show();
-
-          for(uint16_t i=0; i<pixel_alt.numPixels(); i++) {
-            pixel_alt.setPixelColor(i, pixel_alt.Color(0,0,0));
-          }
-          pixel_alt.show();
-      } break;
-
-    } // switch
+    case 'C': {
+      clear();
+    } break;
   }
-  
+}
+
+void setDirection(int direction) {
+  int pixels = 1 + (direction / 22.5);
+
+  Serial.print("Direction: ");
+  Serial.print(direction);
+  Serial.print(", Pixels: ");
+  Serial.println(pixels);
+
+  for(uint16_t i=0; i<pixel_dir.numPixels(); i++) {
+    if(i<pixels) {
+      pixel_dir.setPixelColor(dirBulbs[i], pixel_dir.Color(0,0,255));
+    } else {
+      pixel_dir.setPixelColor(dirBulbs[i], pixel_dir.Color(0,0,0));
+    }
+  }
+
+  pixel_dir.show();
+}
+
+void setAltitude(int level) {
+  int pixels = level / 500; // One LED per 500ft
+
+  Serial.print("Altitude: ");
+  Serial.print(level);
+  Serial.print(", Pixels: ");
+  Serial.println(pixels);
+          
+  if(pixels>pixel_alt.numPixels()) { pixels = pixel_alt.numPixels(); }
+
+  for(uint16_t i=0; i<pixel_alt.numPixels(); i++) {
+    if(i<pixels) {
+      pixel_alt.setPixelColor(altBulbs[i], pixel_alt.Color(0,0,255));
+    } else {
+      pixel_alt.setPixelColor(altBulbs[i], pixel_alt.Color(0,0,0));
+    }
+  }
+
+  pixel_alt.show();
+}
+
+void clear() {
+  Serial.println("Clearing");
+
+  for(uint16_t i=0; i<pixel_dir.numPixels(); i++) {
+    pixel_dir.setPixelColor(i, pixel_dir.Color(0,0,0));
+  }
+  pixel_dir.show();
+
+  for(uint16_t i=0; i<pixel_alt.numPixels(); i++) {
+    pixel_alt.setPixelColor(i, pixel_alt.Color(0,0,0));
+  }
+  pixel_alt.show();
+}
+
+void loop() {
+  String data;
+
+  while (Serial.available() > 0) {
+    char received = Serial.read();
+
+    Serial.print("Got [");
+    Serial.print(received);
+    Serial.println("]");
+
+    data += received;
+
+    // Process message when new line character is recieved
+    if(received == '\n') {
+      processValue(data);
+      data = "";
+    }
+  }
+
   delay(100);
 }

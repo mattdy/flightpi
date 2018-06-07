@@ -23,6 +23,7 @@ log.addHandler(stream)
 
 from SbsThread import SbsThread
 from LcdThread import LcdThread
+from ArduinoThread import ArduinoThread
 import time
 
 class FlightPi:
@@ -42,6 +43,10 @@ class FlightPi:
         self.addReceiver(self.lcdThread.processFlight)
         self.lcdThread.start()
 
+        self.arduinoThread = ArduinoThread("/dev/ttyUSB0")
+        self.addReceiver(self.arduinoThread.processFlight)
+        self.arduinoThread.start()
+
         self.sbsThread = SbsThread("mercury",30003)
         self.sbsThread.addReceiver(self.processMessage)
         self.sbsThread.start()
@@ -54,6 +59,7 @@ class FlightPi:
         except (KeyboardInterrupt, SystemExit):
             log.warn("Interrupted, shutting down")
 
+        self.arduinoThread.stop()
         self.sbsThread.stop()
         self.lcdThread.stop()
 
@@ -82,7 +88,11 @@ class FlightPi:
                 lowest = a
 
         if(lowest != self.display):
-            self.display = lowest
+            if(lowest is not None):
+                self.display = dict(lowest) # Take a copy rather than a reference
+            else:
+                self.display = None
+
             log.debug("Updating display to: %s" % (self.display))
             for rec in self.receivers:
                 try:

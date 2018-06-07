@@ -9,6 +9,10 @@ Adafruit_NeoPixel pixel_dir = Adafruit_NeoPixel(16, 2, NEO_GRBW + NEO_KHZ800);
 Adafruit_NeoPixel pixel_liv = Adafruit_NeoPixel(24, 3, NEO_GRBW + NEO_KHZ800);
 Adafruit_NeoPixel pixel_alt = Adafruit_NeoPixel(16, 4, NEO_GRB + NEO_KHZ800);
 
+// The actual bulbs aren't in a nice order, so set up arrays to determine which order to light them up in
+int dirBulbs[] = { 6,5,4,3,2,1,0,15,14,13,12,11,10,9,8,7 };
+int altBulbs[] = { 7,15,6,14,5,13,4,12,3,11,2,10,1,9,0,8 };
+
 void setup() {
   Serial.begin(9600);
 
@@ -30,9 +34,9 @@ void loop() {
     String incoming = Serial.readString();
 
     switch(incoming[0]) {
-      case 'D': {
+      case 'D': { // Direction indication
           int direction = incoming.substring(1).toInt();
-          int pixels = direction / 22.5;
+          int pixels = 1 + (direction / 22.5);
 
           Serial.print("Direction: ");
           Serial.print(direction);
@@ -41,23 +45,55 @@ void loop() {
 
           for(uint16_t i=0; i<pixel_dir.numPixels(); i++) {
             if(i<pixels) {
-              pixel_dir.setPixelColor(i, pixel_dir.Color(0,0,255));
+              pixel_dir.setPixelColor(dirBulbs[i], pixel_dir.Color(0,0,255));
             } else {
-              pixel_dir.setPixelColor(i, pixel_dir.Color(0,0,0));
+              pixel_dir.setPixelColor(dirBulbs[i], pixel_dir.Color(0,0,0));
             }
           }
 
           pixel_dir.show();
       } break;
 
-      case 'L': {
+      case 'A': { // Altitude indication
+          int level = incoming.substring(1).toInt();
+          int pixels = level / 500; // One LED per 500ft
+
+          Serial.print("Altitude: ");
+          Serial.print(level);
+          Serial.print(", Pixels: ");
+          Serial.println(pixels);
+          
+          if(pixels>pixel_alt.numPixels()) { pixels = pixel_alt.numPixels(); }
+
+          for(uint16_t i=0; i<pixel_alt.numPixels(); i++) {
+            if(i<pixels) {
+              pixel_alt.setPixelColor(altBulbs[i], pixel_alt.Color(0,0,255));
+            } else {
+              pixel_alt.setPixelColor(altBulbs[i], pixel_alt.Color(0,0,0));
+            }
+          }
+
+          pixel_alt.show();
+      } break;
+
+      case 'L': { // Livery indication
 
       } break;
 
+      case 'C': { // Clear all LEDs
+          Serial.print("Clearing");
 
-      case 'A': {
+          for(uint16_t i=0; i<pixel_dir.numPixels(); i++) {
+            pixel_dir.setPixelColor(i, pixel_dir.Color(0,0,0));
+          }
+          pixel_dir.show();
 
+          for(uint16_t i=0; i<pixel_alt.numPixels(); i++) {
+            pixel_alt.setPixelColor(i, pixel_alt.Color(0,0,0));
+          }
+          pixel_alt.show();
       } break;
+
     } // switch
   }
   

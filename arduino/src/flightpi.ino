@@ -76,7 +76,7 @@ void setLivery(String colours) {
   for(uint16_t i=0; i<3; i++) {
     uint32_t c = getColor(colours[i]);
     for(uint16_t p=0; p<pixPerCol; p++) {
-      pixel_liv.setPixelColor((i * pixPerCol) + p, c);
+      pixel_liv.setPixelColor(((2-i) * pixPerCol) + p, c);
     }
   }
 

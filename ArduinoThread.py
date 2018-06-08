@@ -33,10 +33,15 @@ class ArduinoThread(threading.Thread):
             self.device.write("C\n")
             self.device.flush()
         else:
+            climb = "L"
+            if(flight['verticalRate'] is not None):
+                if(int(flight['verticalRate'])>100): climb = "C"
+                if(int(flight['verticalRate'])<-100): climb = "D"
+
             self.device.write("D%s\n" % (flight['track']))
-            self.device.write("A%s\n" % (flight['altitude']))
+            self.device.write("A%s%s\n" % (climb,flight['altitude']))
             if flight['callsign'][:3] in FlightColours.col:
-                self.device.write("L%s\n" % (FlightColours.col[flight['callsign'][:3]]));
+                self.device.write("L%s\n" % (FlightColours.col[flight['callsign'][:3]]))
 
     def stop(self):
         self.stopping = True

@@ -11,6 +11,7 @@ import threading
 import logging
 import time
 import serial
+from FlightColours import FlightColours
 
 log = logging.getLogger('root')
 
@@ -34,6 +35,8 @@ class ArduinoThread(threading.Thread):
         else:
             self.device.write("D%s\n" % (flight['track']))
             self.device.write("A%s\n" % (flight['altitude']))
+            if flight['callsign'][:3] in FlightColours.col:
+                self.device.write("L%s\n" % (FlightColours.col[flight['callsign'][:3]]));
 
     def stop(self):
         self.stopping = True

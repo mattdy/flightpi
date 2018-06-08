@@ -21,8 +21,8 @@ class FlightColours:
     col = {
         "AUR" : "YWY",
         "BEE" : "BWW",
-        "EZY" : "OWO",
-        "EZS" : "OWO",
+        "EZY" : "OOO",
+        "EZS" : "OOO",
         "EXS" : "RWR",
         "BAW" : "RWB",
         "SHT" : "RWB",

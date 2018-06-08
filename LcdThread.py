@@ -13,6 +13,7 @@ import threading
 import logging
 import time
 import smbus
+from FlightDetails import FlightDetails
 
 log = logging.getLogger('root')
 
@@ -47,6 +48,8 @@ class LcdThread(threading.Thread):
         self.address = address
         self.width = width
 
+        self.data = FlightDetails()
+
     def processFlight(self, flight):
         """ Take the given flight details, translate it into what we want to show on the LCD """
         log.debug("Received flight %s to display" % (flight))
@@ -59,10 +62,13 @@ class LcdThread(threading.Thread):
         }
 
         if(flight is not None):
+            type = self.data.getType(flight['icao24'])
+            if type is None: type=""
+
             lines = {
                 LCD_LINE_1: '{}'.format(flight['callsign'].center(self.width)),
                 LCD_LINE_2: '{}ft'.format(flight['altitude'].center(self.width)),
-                LCD_LINE_3: '',
+                LCD_LINE_3: '{}'.format(type.center(self.width)),
                 LCD_LINE_4: '{}'.format(flight['squawk'].center(self.width))
             }
             self.backlight = LCD_BACKLIGHT_ON

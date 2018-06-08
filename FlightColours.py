@@ -19,11 +19,17 @@ class FlightColours:
     #    None
 
     col = {
+        "AUR" : "YWY",
+        "BEE" : "BWW",
         "EZY" : "OWO",
         "EZS" : "OWO",
+        "EXS" : "RWR",
         "BAW" : "RWB",
         "SHT" : "RWB",
+        "CFE" : "RWB",
+        "DLH" : "WWB",
         "AFR" : "BWR",
+        "KLM" : "BBW",
         "TOM" : "BWB",
         "TCX" : "WBY",
         "NAX" : "RWW",

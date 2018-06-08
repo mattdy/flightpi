@@ -85,7 +85,13 @@ class SbsThread(threading.Thread):
                 except Exception as e:
                     log.error("Error receiving data, will attempt reconnecting", e)
                     self.socket = None
-                    continue
+                    break
+
+            if not data in self.buff:
+                # This seems odd, but it'll happen if we 'break' out of the loop above due to an error
+                # In this case, we go back to the start of the main thread loop and reconnect
+                log.debug("Incomplete line, restarting loop")
+                continue
   
             pos = self.buff.find(data)
             rval = self.buff[:pos + len(data)]
@@ -94,6 +100,7 @@ class SbsThread(threading.Thread):
             msg = rval.strip()
             if(msg is not None and msg is not ""):
                 self.processLine(msg)
-        
+
+        log.info("SbsThread shutting down")        
         self.socket.close()
         log.info("SbsThread shut down")

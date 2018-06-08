@@ -29,6 +29,22 @@ void setup() {
   pixel_alt.show();
 }
 
+// Fetch colour based on character value
+uint32_t getColor(char val) {
+  switch(val) {
+    case 'R': return pixel_liv.Color(255, 0  , 0  );
+    case 'G': return pixel_liv.Color(0  , 255, 0  );
+    case 'B': return pixel_liv.Color(0  , 0  , 255);
+    case 'W': return pixel_liv.Color(255, 255, 255);
+    case 'Y': return pixel_liv.Color(255, 255, 0  );
+    case 'O': return pixel_liv.Color(255, 128, 0  );
+    case 'N':
+    default:
+      return pixel_liv.Color(0,0,0);
+
+  }
+}
+
 void processValue(String val) {
   Serial.print("Processing ");
   Serial.println(val);
@@ -43,13 +59,28 @@ void processValue(String val) {
     } break;
 
     case 'L': {
-      //TODO: Livery display
+      setLivery(val.substring(1));
     } break;
 
     case 'C': {
       clear();
     } break;
   }
+}
+
+void setLivery(String colours) {
+  Serial.print("Livery: ");
+  Serial.println(colours);
+
+  int pixPerCol = pixel_liv.numPixels() / 3;
+  for(uint16_t i=0; i<3; i++) {
+    uint32_t c = getColor(colours[i]);
+    for(uint16_t p=0; p<pixPerCol; p++) {
+      pixel_liv.setPixelColor((i * pixPerCol) + p, c);
+    }
+  }
+
+  pixel_liv.show();
 }
 
 void setDirection(int direction) {
@@ -104,6 +135,11 @@ void clear() {
     pixel_alt.setPixelColor(i, pixel_alt.Color(0,0,0));
   }
   pixel_alt.show();
+
+  for(uint16_t i=0; i<pixel_liv.numPixels(); i++) {
+    pixel_liv.setPixelColor(i, pixel_liv.Color(0,0,0));
+  }
+  pixel_liv.show();
 }
 
 void loop() {

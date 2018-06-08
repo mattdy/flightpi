@@ -21,9 +21,9 @@ class FlightColours:
     col = {
         "EZY" : "OWO",
         "EZS" : "OWO",
-        "BAW" : "BWR",
-        "SHT" : "BWR",
-        "AFR" : "RWB",
+        "BAW" : "RWB",
+        "SHT" : "RWB",
+        "AFR" : "BWR",
         "TOM" : "BWB",
         "TCX" : "WBY",
         "NAX" : "RWW",

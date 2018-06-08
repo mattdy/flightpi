@@ -55,7 +55,7 @@ void processValue(String val) {
     } break;
 
     case 'A': {
-      setAltitude(val.substring(1).toInt());
+      setAltitude(val.substring(2).toInt(), val[1]);
     } break;
 
     case 'L': {
@@ -102,19 +102,37 @@ void setDirection(int direction) {
   pixel_dir.show();
 }
 
-void setAltitude(int level) {
+void setAltitude(int level, char climb) {
   int pixels = level / 500; // One LED per 500ft
 
   Serial.print("Altitude: ");
   Serial.print(level);
+  Serial.print(", Climb: ");
+  Serial.print(climb);
   Serial.print(", Pixels: ");
   Serial.println(pixels);
           
   if(pixels>pixel_alt.numPixels()) { pixels = pixel_alt.numPixels(); }
 
+  uint32_t col;
+  switch(climb) {
+    case 'C':
+      col = pixel_alt.Color(0,255,0);
+      break;
+
+    case 'D':
+      col = pixel_alt.Color(255,0,0);
+      break;
+
+    case 'L':
+    default:
+      col = pixel_alt.Color(0,0,255);
+    break;
+  }
+
   for(uint16_t i=0; i<pixel_alt.numPixels(); i++) {
     if(i<pixels) {
-      pixel_alt.setPixelColor(altBulbs[i], pixel_alt.Color(0,0,255));
+      pixel_alt.setPixelColor(altBulbs[i], col);
     } else {
       pixel_alt.setPixelColor(altBulbs[i], pixel_alt.Color(0,0,0));
     }

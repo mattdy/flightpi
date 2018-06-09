@@ -42,6 +42,9 @@ class ArduinoThread(threading.Thread):
             self.device.write("A%s%s\n" % (climb,flight['altitude']))
             if flight['callsign'][:3] in FlightColours.col:
                 self.device.write("L%s\n" % (FlightColours.col[flight['callsign'][:3]]))
+            else:
+                # Blank the LEDs if we don't have a specified livery
+                self.device.write("LNNN\n")
 
     def stop(self):
         self.stopping = True

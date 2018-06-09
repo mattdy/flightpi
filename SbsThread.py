@@ -79,7 +79,12 @@ class SbsThread(threading.Thread):
 
             while not data in self.buff:
                 try:
-                    self.buff += self.socket.recv(1024)
+                    recv = self.socket.recv(1024)
+                    if not recv:
+                        log.error("Socket has been closed, will attempt reconnecting")
+                        self.socket = None
+                        break
+                    self.buff += recv
                 except socket.timeout as t:
                     continue
                 except Exception as e:

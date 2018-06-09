@@ -47,8 +47,8 @@ class FlightDetails:
                 req = urllib2.Request("https://ae.roplan.es/api/hex-reg.php?hex=%s" % (icao), headers={ 'User-Agent': 'Mozilla/5.0' })
                 reg = urllib2.urlopen(req).read()
 
-                if type=="n/a": type=None
-                if reg=="n/a": reg=None
+                if type=="n/a" or type=="0": type=None
+                if reg=="n/a" or reg=="0": reg=None
 
                 self.apiCache[icao] = time.time()
 

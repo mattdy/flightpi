@@ -77,7 +77,7 @@ class SbsThread(threading.Thread):
             self.buff = ""
             data = "\n"
 
-            while not data in self.buff:
+            while not data in self.buff and not self.stopping:
                 try:
                     recv = self.socket.recv(1024)
                     if not recv:

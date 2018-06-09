@@ -52,8 +52,6 @@ class LcdThread(threading.Thread):
 
     def processFlight(self, flight):
         """ Take the given flight details, translate it into what we want to show on the LCD """
-        log.debug("Received flight %s to display" % (flight))
-
         lines = {
             LCD_LINE_1: "",
             LCD_LINE_2: "",
@@ -65,9 +63,20 @@ class LcdThread(threading.Thread):
             type = self.data.getType(flight['icao24'])
             if type is None: type=""
 
+            speed = flight['groundSpeed']
+            if speed is None:
+                speed = ""
+            else:
+                speed += "kts"
+
+            altLine = self.getLevel(flight['altitude'])
+            # Pad out line with appropriate number of spaces
+            altLine = altLine.ljust(self.width - len(speed))
+            altLine += speed
+
             lines = {
                 LCD_LINE_1: '{}'.format(flight['callsign'].center(self.width)),
-                LCD_LINE_2: '{}ft'.format(flight['altitude'].center(self.width)),
+                LCD_LINE_2: altLine,
                 LCD_LINE_3: '{}'.format(type.center(self.width)),
                 LCD_LINE_4: '{}'.format(flight['squawk'].center(self.width))
             }
@@ -77,6 +86,13 @@ class LcdThread(threading.Thread):
 
         for i in lines:
             self.__lcd_line(lines[i], i)
+
+    def getLevel(self, level):
+        """ Turn a given level into an altitude or flight level display accordingly """
+        if level<6000: # Transition level
+            return "A{}".format(int(level)/100)
+        else:
+            return "FL{}".format(int(level)/100)
 
     def __lcd_write(self, bits, mode):
         """ Send byte to data pins on the LCD """

@@ -27,8 +27,6 @@ class ArduinoThread(threading.Thread):
 
     def processFlight(self, flight):
         """ Take the given flight details, translate it into what we want to show on the LCD """
-        log.debug("Received flight %s to display" % (flight))
-
         if(flight is None):
             self.device.write("C\n")
             self.device.flush()

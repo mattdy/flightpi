@@ -79,7 +79,7 @@ class FlightPi:
                 # No update for 30 seconds, so remove
                 del self.aircraft[a['icao24']]
 
-            if(a['altitude'] is None or a['callsign'] is None or a['squawk'] is None):
+            if(a['altitude'] is None or a['callsign'] is None or a['squawk'] is None or a['track'] is None or a['groundSpeed'] is None):
                 # Don't select aircraft that we don't have enough detail on
                 continue
 

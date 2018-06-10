@@ -89,7 +89,7 @@ class LcdThread(threading.Thread):
 
     def getLevel(self, level):
         """ Turn a given level into an altitude or flight level display accordingly """
-        if level<6000: # Transition level
+        if int(level)<6000: # Transition level
             return "A{}".format(int(level)/100)
         else:
             return "FL{}".format(int(level)/100)

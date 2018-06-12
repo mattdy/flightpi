@@ -1,3 +1,13 @@
+/*
+flightpi.ino
+Arduino code for controlling NeoPixels, driven by serial connection from Raspberry Pi
+
+Matt Dyson
+24/01/18
+
+Part of FlightPi - http://github.com/mattdy/flightpi
+*/
+
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
   #include <avr/power.h>

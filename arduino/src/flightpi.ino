@@ -130,26 +130,6 @@ void setDirection(int direction) {
   pixel_dir.show();
 
 }
-  
-
-void oldSetDirection(int direction) {
-  int pixels = 1 + (direction / 22.5);
-
-  Serial.print("Direction: ");
-  Serial.print(direction);
-  Serial.print(", Pixels: ");
-  Serial.println(pixels);
-
-  for(uint16_t i=0; i<pixel_dir.numPixels(); i++) {
-    if(i<pixels) {
-      pixel_dir.setPixelColor(dirBulbs[i], pixel_dir.Color(0,0,255));
-    } else {
-      pixel_dir.setPixelColor(dirBulbs[i], pixel_dir.Color(0,0,0));
-    }
-  }
-
-  pixel_dir.show();
-}
 
 void setAltitude(int level, char climb) {
   int pixels = level / 500; // One LED per 500ft

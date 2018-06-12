@@ -84,6 +84,55 @@ void setLivery(String colours) {
 }
 
 void setDirection(int direction) {
+  int position = direction / 22.5; // Position of our main direction LED
+  int trail = 3; // Length of faded trail either side
+
+  // First, clear every pixel
+  for(uint16_t i=0; i<pixel_dir.numPixels(); i++) {
+      pixel_dir.setPixelColor(dirBulbs[i], pixel_dir.Color(0,0,0));
+  }
+
+  // Work out where we want to start the trail
+  int start = position - trail;
+
+  Serial.print("Position ");
+  Serial.println(position);
+  Serial.print("Trail ");
+  Serial.println(trail);
+  Serial.print("Start ");
+  Serial.println(start);
+
+  for(uint16_t i=0; i<(2 * trail) + 1; i++) {
+    int bulb = start + i;
+    if(bulb < 0) {
+      bulb = pixel_dir.numPixels() + bulb;
+    }
+    if(bulb >= pixel_dir.numPixels()) {
+      bulb = bulb - pixel_dir.numPixels();
+    }
+
+    int div = i - trail;
+    float intensity = (float) 1 / (1 + abs(div));
+    int col = intensity * 255;
+
+    Serial.print("Pixel ");
+    Serial.print(bulb);
+    Serial.print(" intensity ");
+    Serial.print(intensity);
+    Serial.print(" col ");
+    Serial.print(col);
+    Serial.print(" div ");
+    Serial.println(div);
+
+    pixel_dir.setPixelColor(dirBulbs[bulb], pixel_dir.Color(0,0,col));
+  }
+
+  pixel_dir.show();
+
+}
+  
+
+void oldSetDirection(int direction) {
   int pixels = 1 + (direction / 22.5);
 
   Serial.print("Direction: ");

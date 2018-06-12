@@ -69,16 +69,22 @@ class LcdThread(threading.Thread):
             else:
                 speed += "kts"
 
-            altLine = self.getLevel(flight['altitude'])
-            # Pad out line with appropriate number of spaces
-            altLine = altLine.ljust(self.width - len(speed))
-            altLine += speed
+            altLine = ""
+            if(flight['altitude'] is not None):
+                altLine = self.getLevel(flight['altitude'])
+                # Pad out line with appropriate number of spaces
+                altLine = altLine.ljust(self.width - len(speed))
+                altLine += speed
+
+            squawk = flight['squawk']
+            if(squawk is None):
+                squawk = ""
 
             lines = {
                 LCD_LINE_1: '{}'.format(flight['callsign'].center(self.width)),
                 LCD_LINE_2: altLine,
                 LCD_LINE_3: '{}'.format(type.center(self.width)),
-                LCD_LINE_4: '{}'.format(flight['squawk'].center(self.width))
+                LCD_LINE_4: '{}'.format(squawk.center(self.width))
             }
             self.backlight = LCD_BACKLIGHT_ON
         else:

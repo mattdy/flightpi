@@ -30,19 +30,33 @@ class ArduinoThread(threading.Thread):
         if(flight is None):
             self.device.write("C\n")
             self.device.flush()
+            self.display = None
         else:
+            if(self.display is not None and self.display['callsign'] != flight['callsign']):
+                # We're getting a new flight, so clear the current display
+                self.device.write("C\n")
+                self.device.flush()
+
+            self.display = flight
+
             climb = "L"
             if(flight['verticalRate'] is not None):
                 if(int(flight['verticalRate'])>100): climb = "C"
                 if(int(flight['verticalRate'])<-100): climb = "D"
 
-            self.device.write("D%s\n" % (flight['track']))
-            self.device.write("A%s%s\n" % (climb,flight['altitude']))
+            if(flight['track'] is not None):
+                self.device.write("D%s\n" % (flight['track']))
+    
+            if(flight['altitude'] is not None):
+                self.device.write("A%s%s\n" % (climb,flight['altitude']))
+    
             if flight['callsign'][:3] in FlightColours.col:
                 self.device.write("L%s\n" % (FlightColours.col[flight['callsign'][:3]]))
             else:
                 # Blank the LEDs if we don't have a specified livery
                 self.device.write("LNNN\n")
+
+            self.device.flush()
 
     def stop(self):
         self.stopping = True

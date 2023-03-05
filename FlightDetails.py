@@ -10,7 +10,8 @@ Matt Dyson
 
 Part of FlightPi - http://github.com/mattdy/flightpi
 
-@snerd9334 : API URLs updated based on info on https://hexdb.io/ (We've moved from api.joshdouch.me! Old endpoints continue to work, but consider updating code to reflect the new syntax.)
+Updates:
+24/10/22 @snerd9334 : API URLs updated based on info on https://hexdb.io/
 """
 
 import logging

@@ -10,7 +10,8 @@ Matt Dyson
 
 Part of FlightPi - http://github.com/mattdy/flightpi
 
-@snerd9334 : API URLs updated based on info in forum post linked above. 
+Updates:
+24/10/22 @snerd9334 : API URLs updated based on info on https://hexdb.io/
 """
 
 import logging
@@ -43,10 +44,10 @@ class FlightDetails:
                     return None
             try:
                 log.debug("Attempting to fetch details from external API")
-                req = urllib2.Request("https://api.joshdouch.me/hex-type.php?hex=%s" % (icao), headers={ 'User-Agent': 'Mozilla/5.0' })
+                req = urllib2.Request("https://hexdb.io/hex-type.php?hex=%s" % (icao), headers={ 'User-Agent': 'Mozilla/5.0' })
                 type = urllib2.urlopen(req).read()
 
-                req = urllib2.Request("https://api.joshdouch.me/hex-reg.php?hex=%s" % (icao), headers={ 'User-Agent': 'Mozilla/5.0' })
+                req = urllib2.Request("https://hexdb.io/hex-reg.php?hex=%s" % (icao), headers={ 'User-Agent': 'Mozilla/5.0' })
                 reg = urllib2.urlopen(req).read()
 
                 if type=="n/a" or type=="0": type=None
